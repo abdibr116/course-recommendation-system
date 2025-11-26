@@ -1,0 +1,62 @@
+{
+  "generated_at": "2025-11-26T16:33:38.985475",
+  "dataset_statistics": {
+    "total_courses": 12048,
+    "coursera_courses": 8370,
+    "udemy_courses": 3678,
+    "coursera_avg_rating": 4.005973715651135,
+    "udemy_avg_subscribers": 3197.150625339859
+  },
+  "preprocessing_example": {
+    "original": "Machine Learning: Classification and Regression Analysis",
+    "preprocessed": "machine learning classification regression analysis"
+  },
+  "model_performance": {
+    "5": {
+      "precision_at_k": 0.5333333333333333,
+      "recall_at_k": 0.6488095238095238,
+      "ndcg_at_k": 0.6190726966734998,
+      "mrr": 0.7333333333333334,
+      "user_satisfaction": 88.88888888888889,
+      "total_queries": 3,
+      "total_feedback": 18
+    },
+    "10": {
+      "precision_at_k": 0.5333333333333333,
+      "recall_at_k": 1.0,
+      "ndcg_at_k": 0.7318451559943102,
+      "mrr": 0.7333333333333334,
+      "user_satisfaction": 88.88888888888889,
+      "total_queries": 3,
+      "total_feedback": 18
+    },
+    "20": {
+      "precision_at_k": 0.26666666666666666,
+      "recall_at_k": 1.0,
+      "ndcg_at_k": 0.7318451559943102,
+      "mrr": 0.7333333333333334,
+      "user_satisfaction": 88.88888888888889,
+      "total_queries": 3,
+      "total_feedback": 18
+    }
+  },
+  "implementation_details": {
+    "algorithm": "Content-Based Filtering with TF-IDF",
+    "similarity_metric": "Cosine Similarity",
+    "features": [
+      "course_title",
+      "course_organization",
+      "course_category",
+      "course_difficulty"
+    ],
+    "preprocessing_steps": [
+      "Lowercase conversion",
+      "Special character removal",
+      "Tokenization",
+      "Stopword removal",
+      "Lemmatization"
+    ],
+    "vectorization": "TF-IDF (max_features=5000, ngram_range=(1,2))",
+    "k_neighbors": 10
+  }
+}

@@ -84,6 +84,25 @@ docker compose down
 docker compose down -v
 ```
 
+### Generate Report Data and Visualizations
+```bash
+# Generate statistics and visualizations for final report
+docker compose --profile tools run --rm report-generator
+
+# Generated files will be in generated/:
+#   - generated/report_data.json
+#   - generated/platform_distribution.png
+#   - generated/difficulty_distribution.png
+#   - generated/rating_distribution.png
+```
+
+### Health Check
+docker compose down
+
+# Stop and remove volumes
+docker compose down -v
+```
+
 ### Health Check
 The container includes a health check that runs every 30 seconds:
 ```bash
