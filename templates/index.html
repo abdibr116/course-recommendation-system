@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Recommendation System</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --dark-bg: #1a1a2e;
+            --card-bg: #ffffff;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            padding: 2rem 0;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+        
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .search-input {
+            border-radius: 50px;
+            border: 2px solid var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .search-input.form-select {
+            padding-right: 2.5rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .search-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(78, 84, 200, 0.25);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-search {
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.4);
+        }
+        
+        .btn-search i {
+            font-size: 1rem;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .stats-card h3 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-card p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .course-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .course-title {
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .course-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .meta-item i {
+            color: var(--primary-color);
+        }
+        
+        .badge-source {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+        }
+        
+        .badge-coursera {
+            background: #0056d2;
+            color: white;
+        }
+        
+        .badge-udemy {
+            background: #a435f0;
+            color: white;
+        }
+        
+        .similarity-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .no-results i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .example-queries {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .example-queries h6 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .example-tag {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .example-tag:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+        
+        .feedback-buttons {
+            display: flex;
+            align-items: center;
+        }
+        
+        .feedback-btn {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            transition: all 0.3s;
+        }
+        
+        .feedback-btn:hover:not(.disabled) {
+            transform: scale(1.05);
+        }
+        
+        .feedback-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container main-container">
+        <!-- Header -->
+        <div class="header text-center">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div></div>
+                <h1 class="flex-grow-1 mb-0"><i class="bi bi-mortarboard-fill"></i> Course Recommendation System</h1>
+                <button class="btn btn-sm btn-outline-primary" onclick="showMetrics()">
+                    <i class="bi bi-graph-up"></i> View Metrics
+                </button>
+            </div>
+            <p>Discover your next learning adventure from thousands of courses</p>
+        </div>
+        
+        <!-- Statistics Row -->
+        <div class="row mb-4" id="statsSection">
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <h3 id="totalCourses">-</h3>
+                    <p>Total Courses</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <h3 id="courseraCourses">-</h3>
+                    <p>Coursera Courses</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <h3 id="udemyCourses">-</h3>
+                    <p>Udemy Courses</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <h3 id="avgRating">-</h3>
+                    <p>Average Rating</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="search-section">
+            <form id="searchForm">
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6">
+                        <input type="text" 
+                               class="form-control search-input" 
+                               id="searchQuery" 
+                               placeholder="Enter your interests (e.g., Python, Machine Learning, Web Development...)"
+                               required>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <select class="form-select search-input" id="platformFilter">
+                            <option value="all">All Platforms</option>
+                            <option value="Coursera">Coursera Only</option>
+                            <option value="Udemy">Udemy Only</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <select class="form-select search-input" id="resultCount">
+                            <option value="5">5 Results</option>
+                            <option value="10" selected>10 Results</option>
+                            <option value="15">15 Results</option>
+                            <option value="20">20 Results</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <button type="submit" class="btn btn-search w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Example Queries -->
+            <div class="example-queries">
+                <h6><i class="bi bi-lightbulb"></i> Try these topics:</h6>
+                <span class="example-tag" onclick="searchExample('Python programming')">Python Programming</span>
+                <span class="example-tag" onclick="searchExample('Machine Learning')">Machine Learning</span>
+                <span class="example-tag" onclick="searchExample('Web Development')">Web Development</span>
+                <span class="example-tag" onclick="searchExample('Data Science')">Data Science</span>
+                <span class="example-tag" onclick="searchExample('Business Finance')">Business Finance</span>
+                <span class="example-tag" onclick="searchExample('Digital Marketing')">Digital Marketing</span>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="resultsSection"></div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Load statistics on page load
+        window.addEventListener('load', function() {
+            fetch('/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalCourses').textContent = data.total_courses.toLocaleString();
+                    document.getElementById('courseraCourses').textContent = data.coursera_courses.toLocaleString();
+                    document.getElementById('udemyCourses').textContent = data.udemy_courses.toLocaleString();
+                    document.getElementById('avgRating').textContent = data.avg_rating.toFixed(1);
+                })
+                .catch(error => console.error('Error loading stats:', error));
+        });
+        
+        // Handle form submission
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const query = document.getElementById('searchQuery').value.trim();
+            const topN = document.getElementById('resultCount').value;
+            const platform = document.getElementById('platformFilter').value;
+            
+            if (!query) {
+                return;
+            }
+            
+            // Show loading
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.innerHTML = `
+                <div class="loading">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="text-white mt-3">Finding the best courses for you...</p>
+                </div>
+            `;
+            
+            // Fetch recommendations
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    top_n: parseInt(topN),
+                    platform: platform
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Store query and recommended indices for feedback
+                window.currentQuery = data.query;
+                window.recommendedIndices = data.recommended_indices;
+                
+                displayResults(data.recommendations, data.query);
+            })
+            .catch(error => {
+                resultsSection.innerHTML = `
+                    <div class="no-results">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <h3>Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            });
+        });
+        
+        function displayResults(recommendations, query) {
+            const resultsSection = document.getElementById('resultsSection');
+            
+            if (recommendations.length === 0) {
+                resultsSection.innerHTML = `
+                    <div class="no-results">
+                        <i class="bi bi-search"></i>
+                        <h3>No courses found</h3>
+                        <p>Try different keywords or browse our example topics</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Count platforms
+            const platformCount = recommendations.reduce((acc, course) => {
+                acc[course.source] = (acc[course.source] || 0) + 1;
+                return acc;
+            }, {});
+            
+            let html = `
+                <div class="search-section">
+                    <h4 class="mb-4">
+                        <i class="bi bi-star-fill"></i> 
+                        Recommended Courses for "${query}"
+                        <span class="badge bg-primary ms-2">${recommendations.length} Results</span>
+                        ${platformCount.Coursera ? `<span class="badge badge-coursera ms-1">${platformCount.Coursera} Coursera</span>` : ''}
+                        ${platformCount.Udemy ? `<span class="badge badge-udemy ms-1">${platformCount.Udemy} Udemy</span>` : ''}
+                    </h4>
+            `;
+            
+            recommendations.forEach((course, index) => {
+                const stars = generateStars(course.rating);
+                const studentsFormatted = formatNumber(course.students);
+                const sourceBadge = course.source === 'Coursera' ? 'badge-coursera' : 'badge-udemy';
+                
+                html += `
+                    <div class="course-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="course-title">${index + 1}. ${course.title}</div>
+                            <span class="similarity-badge">${course.similarity.toFixed(1)}% Match</span>
+                        </div>
+                        
+                        <div class="course-meta">
+                            <div class="meta-item">
+                                <i class="bi bi-building"></i>
+                                <span>${course.organization}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="bi bi-tag"></i>
+                                <span>${course.category}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="bi bi-graph-up"></i>
+                                <span>${course.difficulty}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="bi bi-people"></i>
+                                <span>${studentsFormatted} students</span>
+                            </div>
+                            ${course.rating > 0 ? `
+                            <div class="meta-item">
+                                <span class="rating-stars">${stars}</span>
+                                <span>${course.rating.toFixed(1)}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge ${sourceBadge}">
+                                <i class="bi bi-mortarboard"></i> ${course.source}
+                            </span>
+                            <div class="feedback-buttons">
+                                <button class="btn btn-sm btn-success feedback-btn" 
+                                        onclick="submitFeedback(${course.index}, '${course.title.replace(/'/g, "\\'")}', true)"
+                                        id="helpful-${course.index}">
+                                    <i class="bi bi-hand-thumbs-up"></i> Helpful
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary feedback-btn ms-2" 
+                                        onclick="submitFeedback(${course.index}, '${course.title.replace(/'/g, "\\'")}', false)"
+                                        id="not-helpful-${course.index}">
+                                    <i class="bi bi-hand-thumbs-down"></i> Not Helpful
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            resultsSection.innerHTML = html;
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            let stars = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="bi bi-star-fill"></i>';
+            }
+            if (hasHalfStar) {
+                stars += '<i class="bi bi-star-half"></i>';
+            }
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="bi bi-star"></i>';
+            }
+            
+            return stars;
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+        
+        function searchExample(query) {
+            document.getElementById('searchQuery').value = query;
+            document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+        }
+        
+        // Submit user feedback
+        function submitFeedback(courseIndex, courseTitle, helpful) {
+            fetch('/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: window.currentQuery,
+                    course_index: courseIndex,
+                    course_title: courseTitle,
+                    helpful: helpful,
+                    recommended_indices: window.recommendedIndices
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Disable both buttons for this course
+                    const helpfulBtn = document.getElementById(`helpful-${courseIndex}`);
+                    const notHelpfulBtn = document.getElementById(`not-helpful-${courseIndex}`);
+                    
+                    if (helpful) {
+                        helpfulBtn.classList.remove('btn-success');
+                        helpfulBtn.classList.add('btn-success', 'disabled');
+                        helpfulBtn.innerHTML = '<i class="bi bi-check-circle"></i> Thank you!';
+                        notHelpfulBtn.classList.add('disabled');
+                    } else {
+                        notHelpfulBtn.classList.remove('btn-outline-secondary');
+                        notHelpfulBtn.classList.add('btn-secondary', 'disabled');
+                        notHelpfulBtn.innerHTML = '<i class="bi bi-check-circle"></i> Noted';
+                        helpfulBtn.classList.add('disabled');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting feedback:', error);
+            });
+        }
+        
+        // Show evaluation metrics
+        function showMetrics() {
+            fetch('/metrics?k=10')
+                .then(response => response.json())
+                .then(data => {
+                    const metricsHtml = `
+                        <div class="search-section">
+                            <h4 class="mb-4">
+                                <i class="bi bi-graph-up-arrow"></i> Model Evaluation Metrics
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="stats-card">
+                                        <h3>${(data.precision_at_k * 100).toFixed(1)}%</h3>
+                                        <p>Precision@10</p>
+                                        <small class="text-muted">Proportion of relevant courses in top 10 results</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="stats-card">
+                                        <h3>${(data.recall_at_k * 100).toFixed(1)}%</h3>
+                                        <p>Recall@10</p>
+                                        <small class="text-muted">Proportion of relevant courses successfully retrieved</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="stats-card">
+                                        <h3>${(data.ndcg_at_k * 100).toFixed(1)}%</h3>
+                                        <p>NDCG@10</p>
+                                        <small class="text-muted">Ranking quality considering position</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="stats-card">
+                                        <h3>${(data.mrr * 100).toFixed(1)}%</h3>
+                                        <p>Mean Reciprocal Rank</p>
+                                        <small class="text-muted">How early first relevant item appears</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="stats-card">
+                                        <h3>${data.user_satisfaction.toFixed(1)}%</h3>
+                                        <p>User Satisfaction</p>
+                                        <small class="text-muted">Percentage of positive feedback</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="stats-card">
+                                        <h3>${data.total_feedback}</h3>
+                                        <p>Total Feedback</p>
+                                        <small class="text-muted">From ${data.total_queries} unique queries</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button class="btn btn-primary" onclick="location.reload()">
+                                    <i class="bi bi-arrow-left"></i> Back to Search
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('resultsSection').innerHTML = metricsHtml;
+                    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+                })
+                .catch(error => {
+                    console.error('Error loading metrics:', error);
+                    alert('Error loading metrics. Please try again.');
+                });
+        }
+    </script>
+</body>
+</html>
+
