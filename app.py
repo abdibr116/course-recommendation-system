@@ -586,7 +586,7 @@ def collect_feedback():
         # Save feedback to file for persistence
         try:
             from evaluation import save_feedback
-            save_feedback(feedback_data, 'feedback_data.json')
+            save_feedback(feedback_data, '/app/data/feedback_data.json')
         except Exception as e:
             print(f"Warning: Could not save feedback to file: {e}")
         
@@ -652,7 +652,7 @@ if __name__ == '__main__':
     # Load existing feedback data if available
     try:
         from evaluation import load_feedback
-        feedback_data = load_feedback('feedback_data.json')
+        feedback_data = load_feedback('/app/data/feedback_data.json')
         print(f"Loaded {len(feedback_data)} existing feedback entries")
     except Exception as e:
         print(f"No existing feedback data found: {e}")
