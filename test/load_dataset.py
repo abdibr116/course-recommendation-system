@@ -32,8 +32,19 @@ from scipy.sparse import hstack
 # 1. LOAD DATA
 # ==========================================================
 
-# Load Coursera data
-df_coursera = pd.read_csv("../dataset/coursea_data.csv")
+# Load Coursera data from CSV file
+df_coursera_raw = pd.read_csv("../dataset/coursea_data.csv")
+
+# Normalize Coursera columns to match expected schema
+df_coursera = pd.DataFrame({
+    'course_title': df_coursera_raw['Course Title'],
+    'course_organization': df_coursera_raw['Offered By'],
+    'course_Certificate_type': df_coursera_raw['Skill gain'],
+    'course_rating': df_coursera_raw['Rating'],
+    'course_difficulty': df_coursera_raw['Level'],
+    'course_students_enrolled': df_coursera_raw['Number of Review'],
+    'source': 'Coursera'
+})
 
 # Load Udemy data
 df_udemy = pd.read_csv("../dataset/udemy_courses.csv")
@@ -48,9 +59,6 @@ df_udemy_normalized = pd.DataFrame({
     'course_students_enrolled': df_udemy['num_subscribers'],
     'source': 'Udemy'
 })
-
-# Add source column to Coursera data
-df_coursera['source'] = 'Coursera'
 
 # Combine both datasets
 df = pd.concat([df_coursera, df_udemy_normalized], ignore_index=True)

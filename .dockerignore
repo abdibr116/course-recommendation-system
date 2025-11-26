@@ -1,0 +1,47 @@
+# Docker ignore file
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environment (not needed in Docker)
+venv/
+ENV/
+env/
+.venv
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentation (reduce image size)
+docs/
+*.md
+!DOCKER.md
+
+# Testing
+test/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+.cache/
+
+# Large unused files
+*.pdf
+*.docx

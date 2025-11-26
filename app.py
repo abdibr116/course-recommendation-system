@@ -36,7 +36,6 @@ from datetime import datetime  # Date and time operations
 
 # Import NLTK for text preprocessing
 import nltk
-from nltk.tokenize import word_tokenize  # Tokenization
 from nltk.stem import WordNetLemmatizer  # Lemmatization
 from nltk.corpus import stopwords  # Stop words removal
 
@@ -140,8 +139,8 @@ def preprocess_text(text):
     # Remove special characters and digits, keep only letters and spaces
     text = re.sub(r'[^a-z\s]', ' ', text)
     
-    # Tokenization: split text into individual words
-    tokens = word_tokenize(text)
+    # Tokenization: split text into individual words (simple whitespace split)
+    tokens = text.split()
     
     # Remove stop words (common words like 'the', 'is', 'at')
     stop_words = set(stopwords.words('english'))
@@ -178,28 +177,27 @@ def load_and_prepare_data():
     # Declare global variables to be modified
     global df, model, vectorizer, X_combined, X_num, scaler, lemmatizer
     
-    # Download required NLTK data if not already present
+    # NLTK data is pre-downloaded in Docker image
+    # No runtime download needed
     import nltk
-    try:
-        nltk.data.find('tokenizers/punkt_tab')
-    except LookupError:
-        nltk.download('punkt_tab')
-    
-    try:
-        nltk.data.find('corpora/wordnet')
-    except LookupError:
-        nltk.download('wordnet')
-    
-    try:
-        nltk.data.find('corpora/stopwords')
-    except LookupError:
-        nltk.download('stopwords')
     
     # Initialize lemmatizer
     lemmatizer = WordNetLemmatizer()
     
     # Load Coursera course data from CSV file
-    df_coursera = pd.read_csv("dataset/coursea_data.csv")
+    df_coursera_raw = pd.read_csv("dataset/coursea_data.csv")
+    
+    # Normalize Coursera columns to match expected schema
+    # New dataset has different column names: 'Course Title', 'Rating', 'Level', etc.
+    df_coursera = pd.DataFrame({
+        'course_title': df_coursera_raw['Course Title'],  # Course name
+        'course_organization': df_coursera_raw['Offered By'],  # University/organization
+        'course_Certificate_type': df_coursera_raw['Skill gain'],  # Skills/subject area
+        'course_rating': df_coursera_raw['Rating'],  # Course rating
+        'course_difficulty': df_coursera_raw['Level'],  # Difficulty level
+        'course_students_enrolled': df_coursera_raw['Number of Review'],  # Use review count as proxy for enrollment
+        'source': 'Coursera'  # Platform identifier
+    })
     
     # Load Udemy course data from CSV file
     df_udemy = pd.read_csv("dataset/udemy_courses.csv")
@@ -215,9 +213,6 @@ def load_and_prepare_data():
         'course_students_enrolled': df_udemy['num_subscribers'],  # Map subscribers to enrollment count
         'source': 'Udemy'  # Add source identifier for filtering
     })
-    
-    # Add source column to Coursera data for platform identification
-    df_coursera['source'] = 'Coursera'
     
     # Combine both datasets into single DataFrame, reset index
     df = pd.concat([df_coursera, df_udemy_normalized], ignore_index=True)
@@ -666,9 +661,13 @@ if __name__ == '__main__':
     # Print status message
     print("Starting Flask server...")
     
-    # Start Flask development server
+    # Determine if running in Docker
+    import os
+    debug_mode = os.getenv('FLASK_ENV', 'development') != 'production'
+    
+    # Start Flask server
     app.run(
-        debug=True,  # Enable debug mode for development (auto-reload on code changes)
-        host='0.0.0.0',  # Listen on all network interfaces
+        debug=debug_mode,  # Enable debug mode for development only
+        host='0.0.0.0',  # Listen on all network interfaces (required for Docker)
         port=5000  # Use port 5000
     )
